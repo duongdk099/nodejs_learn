@@ -2,7 +2,8 @@ const express = require("express");
 
 const app = express();
 
-module.exports = app;
+const router = require("./routes/index.js");
+app.use("/api", router);
 
 const db = require("./models/index.js");
 db.sequelize
@@ -11,3 +12,4 @@ db.sequelize
 .catch((err) => console.log(err));
 
 
+module.exports = app;
