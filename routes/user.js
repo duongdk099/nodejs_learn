@@ -2,24 +2,16 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send("Welcome to User page");
-})
+const userController = require("../controllers/user");
 
-router.get("/getAllUsers", (req, res) => {
-    res.send("You will have the users here");
-});
+router.get("/signup", userController.signup);
 
-router.post("/createUser", (req, res) => {
-    res.send("You will create a new user here");
-})
+router.get("/getAllUsers", userController.getAllUsers);
 
-router.put("/updateUser", (req, res) => {
-    res.send("You will update a user here");
-})
+router.post("/createUser", userController.createUser);
 
-router.delete("/deleteUser", (req, res) => {
-    res.send("You will delete a user here");
-})
+router.put("/updateUser", userController.updateUser);
+
+router.delete("/deleteUser", userController.deleteUser);
 
 module.exports = router;
