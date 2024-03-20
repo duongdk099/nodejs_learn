@@ -6,7 +6,7 @@ const woodController = require("../controllers/wood");
 
 const auth = require("../middleware/auth");
 
-router.get("/", woodController.readAllWoods);
+router.get("/", auth, woodController.readAllWoods);
 
 router.get('/:hardness',auth, woodController.readByHardness);
 
