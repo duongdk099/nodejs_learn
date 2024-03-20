@@ -1,3 +1,4 @@
+const {Wood} = require("../models/wood");
 exports.getAllWoods = (req, res) => {
   res.send("You will have the woods here");
 };

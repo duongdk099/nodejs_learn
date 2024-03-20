@@ -1,3 +1,4 @@
+const User = require("../models/user");
 exports.signup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   try {
@@ -45,3 +46,24 @@ exports.deleteUser = (req, res) => {
   console.log(req.body);
   res.send("You will delete a user here");
 };
+
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    res.status(200).json({ message: "Login successful" });
+  }
+  catch (error) {
+    console.error("Login Error:", error);
+    res.status(400).json({ error: error.message });
+  }
+}
