@@ -1,4 +1,5 @@
 "use strict";
+const bcrypt = require("bcrypt");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -41,6 +42,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notNull: { msg: "Password is required" },
+        },
+      },
+    },
+    {
+      hooks: {
+        beforeCreate: async (user) => {
+          if (user.password) {
+            const hashedPassword = await bcrypt.hash(user.password, 10);
+            user.password = hashedPassword;
+          }
         },
       },
     },
