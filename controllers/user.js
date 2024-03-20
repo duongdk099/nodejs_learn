@@ -1,13 +1,13 @@
-const User = require("../models/user");
+const {User} = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 exports.signup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
+  console.log(req.body);
   try {
     // Use the create method to insert a new record into the database
 
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
       firstName,

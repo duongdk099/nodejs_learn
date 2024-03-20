@@ -1,7 +1,8 @@
-const { Wood } = require("../models/wood");
-exports.readAllWoods = (req, res) => {
+const { Wood } = require("../models");
+exports.readAllWoods = async (req, res) => {
   try {
-    const woods = Wood.findAll();
+    console.log(Wood);
+    const woods = await Wood.findAll();
     res.status(200).json(woods);
   } catch (error) {
     console.error(error);
