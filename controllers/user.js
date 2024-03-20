@@ -3,11 +3,15 @@ exports.signup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   try {
     // Use the create method to insert a new record into the database
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const newUser = await User.create({
       firstName,
       lastName,
       email,
-      password,
+      password: hashedPassword,
     });
 
     // Respond with the newly created user (excluding sensitive information like password)
@@ -61,9 +65,8 @@ exports.login = async (req, res) => {
     }
 
     res.status(200).json({ message: "Login successful" });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Login Error:", error);
     res.status(400).json({ error: error.message });
   }
-}
+};
