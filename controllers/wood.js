@@ -18,9 +18,7 @@ exports.readByHardness = async (req, res) => {
       },
     });
 
-    if (woods.length > 0) {
-      res.status(200).json(woods);
-    }
+    res.status(200).json(woods);
   } catch (error) {
     console.error("Something wrong happened while searching:", error);
     res
