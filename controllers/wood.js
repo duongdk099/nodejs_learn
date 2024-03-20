@@ -1,16 +1,10 @@
-const {Wood} = require("../models/wood");
-exports.getAllWoods = (req, res) => {
-  res.send("You will have the woods here");
-};
-
-exports.createWood = (req, res) => {
-  res.send("You will create a new wood here");
-};
-
-exports.updateWood = (req, res) => {
-  res.send("You will update a wood here");
-};
-
-exports.deleteWood = (req, res) => {
-  res.send("You will delete a wood here");
+const { Wood } = require("../models/wood");
+exports.readAllWoods = (req, res) => {
+  try {
+    const woods = Wood.findAll();
+    res.json(woods);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
