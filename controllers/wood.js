@@ -73,3 +73,21 @@ exports.updateWood = async (req, res) => {
       .send("The server is not responding. Please try again later.");
   }
 };
+
+exports.deleteWood = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const wood = await Wood.findByPk(id);
+    if (wood) {
+      await wood.destroy();
+      res.status(200).json(wood);
+    } else {
+      res.status(404).json({ error: "Wood not found" });
+    }
+  } catch (error) {
+    console.error("Something wrong happened while deleting:", error);
+    res
+      .status(500)
+      .send("The server is not responding. Please try again later.");
+  }
+}
