@@ -1,4 +1,5 @@
 const { Wood } = require("../models");
+const fs = require("fs");
 exports.readAllWoods = async (req, res) => {
   try {
     const woods = await Wood.findAll();
@@ -51,19 +52,26 @@ exports.updateWood = async (req, res) => {
   const pathname = `${req.protocol}://${req.get("host")}/uploads/${
     req.file.filename
   }`;
-  // console.log(JSON.parse(req.body));
   try {
     const wood = await Wood.findByPk(id);
-    console.log(req.body.datas);
     let newWood = {
       ...JSON.parse(req.body.datas),
-      image: pathname
+      image: null,
     };
-    console.log(newWood);
+    // If the wood exists, update it
     if (wood) {
+      if (req.file) {
+        // If a new image is uploaded
+        newWood.image = pathname;
+        if (wood.image) {
+          // If the wood already has an image, delete it
+          fs.unlinkSync(wood.image);
+        }
+      }
       await wood.update(newWood);
       res.status(200).json(wood);
     } else {
+      // If the wood doesn't exist, return an error
       res.status(404).json({ error: "Wood not found" });
     }
   } catch (error) {
@@ -90,4 +98,4 @@ exports.deleteWood = async (req, res) => {
       .status(500)
       .send("The server is not responding. Please try again later.");
   }
-}
+};
