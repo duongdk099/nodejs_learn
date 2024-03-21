@@ -28,7 +28,6 @@ exports.readByHardness = async (req, res) => {
 };
 
 exports.createWood = async (req, res) => {
-  const { name, type, hardness } = req.body;
   const pathname = `${req.protocol}://${req.get("host")}/uploads/${
     req.file.filename
   }`;
@@ -41,6 +40,34 @@ exports.createWood = async (req, res) => {
     res.status(201).json(newWood);
   } catch (error) {
     console.error("Something wrong happened while creating:", error);
+    res
+      .status(500)
+      .send("The server is not responding. Please try again later.");
+  }
+};
+
+exports.updateWood = async (req, res) => {
+  const { id } = req.params;
+  const pathname = `${req.protocol}://${req.get("host")}/uploads/${
+    req.file.filename
+  }`;
+  // console.log(JSON.parse(req.body));
+  try {
+    const wood = await Wood.findByPk(id);
+    console.log(req.body.datas);
+    let newWood = {
+      ...JSON.parse(req.body.datas),
+      image: pathname
+    };
+    console.log(newWood);
+    if (wood) {
+      await wood.update(newWood);
+      res.status(200).json(wood);
+    } else {
+      res.status(404).json({ error: "Wood not found" });
+    }
+  } catch (error) {
+    console.error("Something wrong happened while updating:", error);
     res
       .status(500)
       .send("The server is not responding. Please try again later.");

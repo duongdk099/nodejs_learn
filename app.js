@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -5,8 +6,8 @@ const cors = require("cors");
 
 const router = require("./routes/index.js");
 const corsOptions = {
-    origin: "http://localhost:8080",
-}
+  origin: process.env.CORS_ORIGIN,
+};
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api", router);
