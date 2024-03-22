@@ -1,0 +1,189 @@
+openapi: 3.0.0
+info:
+  title: Woods API
+  description: API for managing various types of wood resources, including images.
+  version: "1.0"
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+  /woods:
+    get:
+      summary: List all wood resources
+      tags:
+        - Woods
+      responses:
+        200:
+          description: An array of wood objects, each with associated links for resource navigation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  woods:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WoodWithLinks"
+                  links:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Link"
+
+    post:
+      summary: Create a new wood resource
+      tags: [Woods]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the wood
+                type:
+                  type: string
+                  description: Type of the wood
+                hardness:
+                  type: string
+                  description: Hardness of the wood
+                image:
+                  type: string
+                  format: binary
+                  description: Image of the wood
+      responses:
+        201:
+          description: Wood created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wood"
+
+  /woods/{woodId}:
+    get:
+      summary: Get a wood by its ID
+      tags: [Woods]
+      parameters:
+        - in: path
+          name: woodId
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: A wood object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wood"
+
+    put:
+      summary: Update a wood resource by its ID
+      tags: [Woods]
+      parameters:
+        - in: path
+          name: woodId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the wood
+                type:
+                  type: string
+                  description: Type of the wood
+                hardness:
+                  type: string
+                  description: Hardness of the wood
+                image:
+                  type: string
+                  format: binary
+                  description: Image of the wood
+      responses:
+        200:
+          description: Wood updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wood"
+
+    delete:
+      summary: Delete a wood resource by its ID
+      tags: [Woods]
+      parameters:
+        - in: path
+          name: woodId
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Wood deleted successfully
+
+components:
+  schemas:
+    WoodWithLinks:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        hardness:
+          type: string
+        image:
+          type: string
+          format: uri
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+      example:
+        id: 1
+        name: Pine
+        type: softwood
+        hardness: tender
+        image: null
+        createdAt: "2024-03-19T12:46:39.000Z"
+        updatedAt: "2024-03-19T12:46:39.000Z"
+        links:
+          - rel: self
+            method: GET
+            href: "/api/woods/1"
+          - rel: update
+            method: PUT
+            href: "/api/woods/1"
+          - rel: delete
+            method: DELETE
+            href: "/api/woods/1"
+
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        method:
+          type: string
+        href:
+          type: string
+      example:
+        rel: all
+        method: GET
+        href: "/api/woods"
