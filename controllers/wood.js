@@ -4,46 +4,7 @@ exports.readAllWoods = async (req, res) => {
   try {
     let woods = await Wood.findAll();
 
-    const woodsWithLinks = woods.map((wood) => {
-      return {
-        ...wood.toJSON(),
-        links: [
-          {
-            rel: "self",
-            method: "GET",
-            href: `/api/woods/${wood.id}`,
-          },
-          {
-            rel: "update",
-            method: "PUT",
-            href: `/api/woods/${wood.id}`,
-          },
-          {
-            rel: "delete",
-            method: "DELETE",
-            href: `/api/woods/${wood.id}`,
-          },
-        ],
-      };
-    });
-
-    const links = [
-      {
-        rel: "all",
-        method: "GET",
-        href: "/api/woods",
-      },
-      {
-        rel: "by hardness",
-        method: "GET",
-        href: "/api/woods/:hardness",
-      },
-      {
-        rel: "create",
-        method: "POST",
-        href: "/api/woods",
-      },
-    ];
+    const { woodsWithLinks, links } = results_with_links(woods);
 
     res.status(200).json({
       woods: woodsWithLinks,
@@ -64,7 +25,12 @@ exports.readByHardness = async (req, res) => {
       },
     });
 
-    res.status(200).json(woods);
+    const { woodsWithLinks, links } = results_with_links(woods);
+
+    res.status(200).json({
+      woods: woodsWithLinks,
+      links: links,
+    });
   } catch (error) {
     console.error("Something wrong happened while searching:", error);
     res
@@ -83,7 +49,13 @@ exports.createWood = async (req, res) => {
       ...JSON.parse(req.body.datas),
       image: pathname,
     });
-    res.status(201).json(newWood);
+
+    const { woodsWithLinks, links } = results_with_links([newWood]);
+
+    res.status(201).json({
+      wood: woodsWithLinks[0],
+      links: links,
+    });
   } catch (error) {
     console.error("Something wrong happened while creating:", error);
     res
@@ -115,8 +87,14 @@ exports.updateWood = async (req, res) => {
           });
         }
       }
+
+      const { woodsWithLinks, links } = results_with_links([newWood]);
+
       await wood.update(newWood);
-      res.status(200).json(wood);
+      res.status(200).json({
+        wood: woodsWithLinks[0],
+        links: links,
+      });
     } else {
       // If the wood doesn't exist, return an error
       res.status(404).json({ error: "Wood not found" });
@@ -152,3 +130,46 @@ exports.deleteWood = async (req, res) => {
       .send("The server is not responding. Please try again later.");
   }
 };
+function results_with_links(woods) {
+  const woodsWithLinks = woods.map((wood) => {
+    return {
+      ...wood.toJSON(),
+      links: [
+        {
+          rel: "self",
+          method: "GET",
+          href: `/api/woods/${wood.id}`,
+        },
+        {
+          rel: "update",
+          method: "PUT",
+          href: `/api/woods/${wood.id}`,
+        },
+        {
+          rel: "delete",
+          method: "DELETE",
+          href: `/api/woods/${wood.id}`,
+        },
+      ],
+    };
+  });
+
+  const links = [
+    {
+      rel: "all",
+      method: "GET",
+      href: "/api/woods",
+    },
+    {
+      rel: "by hardness",
+      method: "GET",
+      href: "/api/woods/:hardness",
+    },
+    {
+      rel: "create",
+      method: "POST",
+      href: "/api/woods",
+    },
+  ];
+  return { woodsWithLinks, links };
+}
